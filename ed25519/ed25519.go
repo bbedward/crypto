@@ -16,12 +16,12 @@ import (
 	"bytes"
 	"crypto"
 	cryptorand "crypto/rand"
-	"crypto/sha512"
 	"errors"
+	"github.com/frankh/crypto/blake2b"
 	"io"
 	"strconv"
 
-	"golang.org/x/crypto/ed25519/internal/edwards25519"
+	"github.com/frankh/crypto/ed25519/internal/edwards25519"
 )
 
 const (
@@ -73,7 +73,7 @@ func GenerateKey(rand io.Reader) (publicKey PublicKey, privateKey PrivateKey, er
 		return nil, nil, err
 	}
 
-	digest := sha512.Sum512(privateKey[:32])
+	digest := blake2b.Sum512(privateKey[:32])
 	digest[0] &= 248
 	digest[31] &= 127
 	digest[31] |= 64
@@ -98,7 +98,7 @@ func Sign(privateKey PrivateKey, message []byte) []byte {
 		panic("ed25519: bad private key length: " + strconv.Itoa(l))
 	}
 
-	h := sha512.New()
+	h, _ := blake2b.New512(nil)
 	h.Write(privateKey[:32])
 
 	var digest1, messageDigest, hramDigest [64]byte
@@ -160,7 +160,7 @@ func Verify(publicKey PublicKey, message, sig []byte) bool {
 	edwards25519.FeNeg(&A.X, &A.X)
 	edwards25519.FeNeg(&A.T, &A.T)
 
-	h := sha512.New()
+	h, _ := blake2b.New512(nil)
 	h.Write(sig[:32])
 	h.Write(publicKey[:])
 	h.Write(message)
