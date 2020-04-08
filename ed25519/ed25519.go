@@ -17,11 +17,12 @@ import (
 	"crypto"
 	cryptorand "crypto/rand"
 	"errors"
-	"github.com/frankh/crypto/blake2b"
 	"io"
 	"strconv"
 
-	"github.com/frankh/crypto/ed25519/internal/edwards25519"
+	"golang.org/x/crypto/blake2b"
+
+	"github.com/bbedward/crypto/ed25519/internal/edwards25519"
 )
 
 const (
